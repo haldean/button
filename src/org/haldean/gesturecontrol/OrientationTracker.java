@@ -69,7 +69,7 @@ public class OrientationTracker extends Activity implements SensorEventListener 
    * Called when receiving an update and in listen mode.
    */
   private void onUpdate(float x, float y) {
-    float hmin = -5, hmax = 6;
+    float hmin = -5, hmax = 5;
     // Constrain y to [min, max]
     y = y > hmax ? hmax : y < hmin ? hmin : y;
     // Map [min, max] to [0, 1]
@@ -78,11 +78,10 @@ public class OrientationTracker extends Activity implements SensorEventListener 
     h = Math.pow(h, 2);
     
     float vmin = 0, vmax = 5;
-    // Constrain y to [min, max]
+    // Constrain x to [min, max]
     x = x > vmax ? vmax : x < vmin ? vmin : x;
     // Map [min, max] to [0, 1]
     double v = (x - vmin) / (vmax - vmin);
-    // Take pow to give more weight to the red-green area of the spectrum
     v = Math.pow(v, 2);
     
     Intent lightUpdateIntent = new Intent(this, LightsService.class);

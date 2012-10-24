@@ -1,6 +1,7 @@
 package org.haldean.gesturecontrol;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -13,23 +14,27 @@ import android.util.Log;
 
 public class LightsService extends IntentService {
   /* The required percent difference between updates. */
-  private static final String SERVER_ADDR = "tau.haldean.org";
-  private static final int SERVER_PORT = 9000;
-
-  private Socket sock;
+  static String hostAddr = "tau.haldean.org";
+  static int socketPort = 9000;
+  static int httpPort = 80;
 
   static final double MIN_DIFF = 0.05f;
   static double lastHueUpdate = Double.NaN;
   static double lastValueUpdate = Double.NaN;
 
+  private Socket sock;
+  
   public LightsService() {
     super("LightsService");
+    hostAddr = ServerPreferences.getInstance().getHostAddress();
+    socketPort = ServerPreferences.getInstance().getHostSocketPort();
+    httpPort = ServerPreferences.getInstance().getHostHttpPort();
   }
 
   private void establishConnection() {
     try {
-      InetAddress addr = InetAddress.getByName(SERVER_ADDR);
-      sock = new Socket(addr, SERVER_PORT);
+      InetAddress addr = InetAddress.getByName(hostAddr);
+      sock = new Socket(addr, socketPort);
     } catch (IOException e) {
       Log.e("LightsService", "Couldn't establish sockets; falling back to HTTP API.", e);
       sock = null;
@@ -58,7 +63,9 @@ public class LightsService extends IntentService {
       if (sock != null) {
         byte[] buffer = (Double.toString(hue) + ",1," + Double.toString(value) + "\n").getBytes();
         try {
-          sock.getOutputStream().write(buffer);
+          OutputStream out = sock.getOutputStream();
+          out.write(buffer);
+          out.flush();
         } catch (IOException e) {
           Log.e("LightsService", "Couldn't write to open socket; falling back to HTTP API.", e);
           sock = null;
@@ -67,9 +74,12 @@ public class LightsService extends IntentService {
       } else {
         try {
           URL updateUrl = new URL(
-              "http://192.168.2.115/hsvapi?h=" + Double.toString(hue) +
+              "http://" + hostAddr + ":" + httpPort + "/hsvapi?h=" + Double.toString(hue) +
               "&s=1&v=" + Double.toString(value));
+          
           HttpURLConnection conn = (HttpURLConnection) updateUrl.openConnection();
+          
+          // Force the reading of the stream
           Scanner stream = new Scanner(conn.getInputStream());
           while (stream.hasNext()) { stream.nextLine(); }
           stream.close();
