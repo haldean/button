@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 (experimental) for Mac OS X https://github.com/w3c/tidy-html5/tree/c63cc39">
+  <meta charset="utf-8">
+
+  <title>Button: home automation made fun</title>
+  <meta name="author" content="Will Haldean Brown">
+  <link type="text/css" rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <style>
+#header h1 {
+  padding: 50px 0 0 0;
+  margin: 0;
+  }
+
+  #header h2 {
+  margin: 0;
+  }
+
+  #circle {
+  height: 150px;
+  width: 150px;
+  float: left;
+  border: 10px solid #BBB;
+  border-radius: 50%;
+  margin-right: 30px;
+  }
+
+  #header {
+  float: left;
+  width: 100%;
+  line-height: 1;
+  padding-bottom: 4em;
+  }
+  </style>
+
+  <div id="header">
+    <div id="circle"></div>
+
+    <h1 id="button">Button</h1>
+
+    <h2 id="homeautomationmadefun">Home automation made fun</h2>
+  </div>
+
+  <figure>
+    <img src="blue.jpg" alt="">
+  </figure>
+
+  <p><a href="https://github.com/haldean/button">Button</a> is an interface for
+  controlling the color and brightness of lights in your home. It turns your
+  Android device into a motion controller, where one dimension is hue and the
+  other is saturation.</p>
+
+  <p>The controller itself is independent of any hardware configuration; it
+  sends commands to a server which controls the lights themselves (in my system
+  at home, I use <a href="https://github.com/haldean/dimsum">dimsum</a>). This
+  architecture allows you to control your lights from anywhere using the Button
+  controller.</p>
+
+  <p>The real-time nature of the controller and the simple-to-understand
+  mapping of motion to color makes it possible to play Button like an
+  instrument. Playing music and making the lights pulse and change color with
+  the beat is especially satisfying.</p>
+
+  <p>You can download an APK from <a href=
+  "https://github.com/haldean/button/downloads">Github</a>.</p>
+
+  <h3 id="userinterface">User Interface</h3>
+
+  <p>The UI of Button is about as simple as it gets: it’s just one big
+  button.</p>
+
+  <p>As the user tilts their device to the left and right, the hue shown in the
+  circle changes. Tilting it 45 degrees with the left end down is red; as you
+  tilt it more to the right, it cycles through orange, yellow, green, blue,
+  purple and then back through to red at 45 degrees to the right.</p>
+
+  <p>While the user is moving the device, the lights themselves do not change.
+  When the user presses anywhere on the screen, though, the color on the screen
+  gets sent to the lights. The user can hold their finger on the screen as they
+  move the phone, and the lights will respond in real-time.</p>
+
+  <figure>
+    <img src="orange.jpg" alt=
+    "The circles edge glows when the screen is pressed">
+
+    <figcaption>
+      The circle’s edge glows when the screen is pressed
+    </figcaption>
+  </figure>
+
+  <p>Tilting the device away from the user changes the value of the light. When
+  the phone is completely horizontal, the value goes to zero and the lights are
+  off. When the phone is tilted 45 degrees or more in relation to the ground,
+  the lights are at full. Again, the user can hold their finger on the screen
+  and move the phone forwards and backwards to set the brightness of the
+  lights.</p>
+
+  <figure>
+    <img src="black.jpg" alt=
+    "The phone being horizontal maps to the lights being off">
+
+    <figcaption>
+      The phone being horizontal maps to the lights being off
+    </figcaption>
+  </figure>
+
+  <h3 id="useit">Use it</h3>
+
+  <p>Because it requires so much configuration outside just acquiring the app,
+  I have not tried to put Button up on the Play Market. You can download an APK
+  from <a href="https://github.com/haldean/button/downloads">Github</a>. To use
+  Button, you’ll need:</p>
+
+  <ul>
+    <li>RGB LEDs (I used <a href="http://adafruit.com/products/285">these from
+    Adafruit</a>)
+    </li>
+
+    <li>an <a href="http://www.arduino.cc/">Arduino</a>
+    </li>
+
+    <li>a machine that can run a web server (I use a <a href=
+    "http://raspberrypi.org/">Raspberry Pi</a>)
+    </li>
+
+    <li>an Android phone</li>
+  </ul>
+
+  <p>First, wire up your LED strips as described <a href=
+  "http://www.ladyada.net/products/rgbledstrip/">in this fantastic ladyada
+  tutorial</a> and make sure your Arduino is working. Once that’s up, download
+  <a href="https://github.com/haldean/dimsum">dimsum</a> and install the
+  RgbSerial sketch included with it to your Arduino.</p>
+
+  <p>Now start up your light host (in my case, the Raspberry Pi but any
+  computer with a network connection will do) and fire up dimsum by
+  running:</p>
+  <pre>
+<code>$ python dimsum.py --dimmer /dev/ttyUSB0
+</code>
+</pre>
+
+  <p>You may need to change <code>ttyUSB0</code> to match the serial port that
+  your Arduino is running on. You may need to run it as root to allow it to
+  bind to port 80, or set the port to be over 1024 using the
+  <code>--port</code> flag (recommended).</p>
+
+  <p>Finally, install the APK, go to the settings and set the address and port
+  of your light host. Make sure that the phone will be able to access this
+  address; if you’re using an external IP, make sure your router is forwarding
+  the correct ports (the correct ports are whatever you set for the HTTP server
+  <em>in addition to</em> port 9000, which is used for the socket
+  connection).</p>
+
+  <p>If you don’t want to forward ports, you can use the IP of your host on the
+  LAN, but you won’t be able to control your lights if you aren’t connected to
+  your home wifi.</p>
+</body>
+</html>
