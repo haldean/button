@@ -1,6 +1,7 @@
 Title: Button: home automation made fun
 Author: Will Haldean Brown
-CSS: style.css
+CSS: http://haldean.org/content.css
+HTML header: <link rel="stylesheet" media="screen and (min-device-width: 800px)" href="http://haldean.org/screen.css" />
 
 <style>
 #header h1 {
